@@ -9,7 +9,7 @@ export const InputView = {
    * 다리의 길이를 입력받는다.
    */
   async readBridgeSize() {
-    const input = await Console.readLineAsync(MESSAGE.ASK_BRIDGE_LENGTH);
+    const input = await Console.readLineAsync(MESSAGE.ASK_BRIDGE_SIZE);
     return input;
   },
 

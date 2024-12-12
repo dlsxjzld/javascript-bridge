@@ -1,7 +1,7 @@
 import BridgeMaker from './BridgeMaker.js';
 import { InputView } from './view/InputView.js';
 import { OutputView } from './view/OutputView.js';
-import { validateSomething } from './validation/validateFunctions.js';
+import { validateBridgeSize } from './validation/validateFunctions.js';
 
 import { MESSAGE } from './constants/message.js';
 
@@ -14,7 +14,7 @@ class App {
   async getBridgeSize() {
     try {
       const input = await InputView.readBridgeSize();
-      validateSomething(input);
+      validateBridgeSize(input);
       return input;
     } catch (error) {
       OutputView.printResult(error.message);
