@@ -1,4 +1,5 @@
 import { Console } from '@woowacourse/mission-utils';
+import { MESSAGE } from '../constants/message.js';
 
 /**
  * 사용자에게 게임 진행 상황과 결과를 출력하는 역할을 한다.
@@ -18,5 +19,9 @@ export const OutputView = {
    */
   printResult(result) {
     Console.print(result);
+  },
+
+  printGameInstruction() {
+    Console.print(MESSAGE.GAME_INSTRUCTION);
   },
 };
