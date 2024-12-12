@@ -12,17 +12,30 @@ import BridgeRandomNumberGenerator from './model/BridgeRandomNumberGenerator.js'
 import BridgeGame from './model/BridgeGame.js';
 
 class App {
-  gameCount = 0;
-
   async play() {
     OutputView.printGameInstruction();
     const bridgeSize = await this.getBridgeSize();
-    const answer = BridgeMaker.makeBridge(
+    const answer = this.getAnswerBridge(bridgeSize);
+    const realBridge = this.makeRealBridge(answer, bridgeSize);
+    const bridgeGame = new BridgeGame(realBridge, bridgeSize);
+    await this.newMethod(bridgeGame, bridgeSize);
+  }
+
+  async newMethod(bridgeGame, bridgeSize) {
+    const retry = await this.startBridgeGame(bridgeGame, bridgeSize);
+    if (retry === 'R') {
+      bridgeGame.retry();
+      await this.newMethod(bridgeGame, bridgeSize);
+      return;
+    }
+    this.finishGame(bridgeGame);
+  }
+
+  getAnswerBridge(bridgeSize) {
+    return BridgeMaker.makeBridge(
       bridgeSize,
       BridgeRandomNumberGenerator.generate,
     );
-    const realBridge = this.makeRealBridge(answer, bridgeSize);
-    await this.startBridgeGame(realBridge, bridgeSize);
   }
 
   getRow(answer) {
@@ -53,24 +66,15 @@ class App {
     }
   }
 
-  async startBridgeGame(bridge, bridgeSize) {
-    this.gameCount += 1;
-    const bridgeGame = new BridgeGame(bridge, bridgeSize);
+  async startBridgeGame(bridgeGame, bridgeSize) {
     for (let step = 0; step < bridgeSize; step += 1) {
       const userMove = await this.askUserMove();
-      const roundResult = bridgeGame.move(userMove, step);
-      OutputView.printMap(bridgeGame.getCurrentBridgeMap(step));
-      if (roundResult === false) {
-        const re = await bridgeGame.retry(() => this.askUserTry());
-        if (re) {
-          this.startBridgeGame(bridge, bridgeSize);
-          return;
-        }
-        this.finishGame(bridgeGame, step, '실패');
-        return;
+      const canMove = bridgeGame.move(userMove, step);
+      OutputView.printMap(bridgeGame.getCurrentBridgeMap());
+      if (canMove === false) {
+        return await this.askUserTry();
       }
     }
-    this.finishGame(bridgeGame, bridgeSize, '성공');
   }
 
   async askUserMove() {
@@ -95,11 +99,12 @@ class App {
     }
   }
 
-  finishGame(bridgeGame, step, result) {
+  finishGame(bridgeGame) {
+    const result = bridgeGame.getIsFinish();
     OutputView.printGameResultInstruction();
-    OutputView.printMap(bridgeGame.getCurrentBridgeMap(step));
+    OutputView.printMap(bridgeGame.getCurrentBridgeMap());
     OutputView.printResult(MESSAGE.GAME_SUCCESS_RESULT(result));
-    OutputView.printResult(MESSAGE.GAME_TRY_COUNT(this.gameCount));
+    OutputView.printResult(MESSAGE.GAME_TRY_COUNT(bridgeGame.getGameCount()));
   }
 }
 
