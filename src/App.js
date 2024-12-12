@@ -3,6 +3,7 @@ import { InputView } from './view/InputView.js';
 import { OutputView } from './view/OutputView.js';
 import {
   validateBridgeSize,
+  validateRetry,
   validateUserMove,
 } from './validation/validateFunctions.js';
 
@@ -21,12 +22,12 @@ class App {
       BridgeRandomNumberGenerator.generate,
     );
     const realBridge = this.makeRealBridge(answer, bridgeSize);
-    // console.log(
-    //   realBridge
-    //     .map((val) => val.join('|'))
-    //     .map((val) => `[${val}]`)
-    //     .join('\n'),
-    // );
+    console.log(
+      realBridge
+        .map((val) => val.join('|'))
+        .map((val) => `[${val}]`)
+        .join('\n'),
+    );
     this.startBridgeGame(realBridge, bridgeSize);
   }
   // TODO: 게임 시작하고 브릿지 게임 실패하면 R 혹은 Q 입력
@@ -65,8 +66,17 @@ class App {
     for (let step = 0; step < bridgeSize; step += 1) {
       const userMove = await this.askUserMove();
       const roundResult = bridgeGame.move(userMove, step);
+      if (roundResult === false) {
+        const re = await bridgeGame.retry(() => this.askUserTry());
+        if (re) {
+          this.startBridgeGame(bridge, bridgeSize);
+          return;
+        }
+        this.finishGame(bridge, '실패');
+        return;
+      }
     }
-    // TODO: 매 라운드가 성공했는지 실패했는지 반환 받고 이걸 토대로 startBridgeGame을 다시 할지 정함
+    this.finishGame(bridge, '성공');
   }
 
   async askUserMove() {
@@ -80,14 +90,23 @@ class App {
     }
   }
 
-  // async askUserTry(bridge) {
-  //   const reTry = await InputView.readGameCommand();
-  //   if (reTry === 'Q') {
-  //     // 종료
-  //   } else {
-  //     this.startBridgeGame(bridge);
-  //   }
-  // }
+  async askUserTry() {
+    try {
+      const retry = await InputView.readGameCommand();
+      validateRetry(retry);
+      return retry;
+    } catch (error) {
+      OutputView.printResult(error.message);
+      return this.askUserTry();
+    }
+  }
+
+  finishGame(bridge, result) {
+    OutputView.printGameResultInstruction();
+    // bridge 출력
+    OutputView.printResult(MESSAGE.GAME_SUCCESS_RESULT(result));
+    OutputView.printResult(MESSAGE.GAME_TRY_COUNT(this.gameCount));
+  }
 }
 
 export default App;
