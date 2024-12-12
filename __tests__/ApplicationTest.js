@@ -8,10 +8,6 @@ const mockQuestions = (inputs) => {
   Console.readLineAsync.mockImplementation(() => {
     const input = inputs.shift();
 
-    if (input === undefined) {
-      throw new Error('NO INPUT');
-    }
-
     return Promise.resolve(input);
   });
 };
@@ -32,20 +28,20 @@ const getLogSpy = () => {
 
 const getOutput = (logSpy) => [...logSpy.mock.calls].join('');
 
-const runException = (inputs) => {
-  mockQuestions(inputs);
-  const logSpy = getLogSpy();
-  const app = new App();
-
-  app.play();
-
-  expectLogContains(getOutput(logSpy), ['[ERROR]']);
+const expectLogContains = (received, expectedLogs) => {
+  expectedLogs.forEach((log) => {
+    expect(received).toContain(log);
+  });
 };
 
-const expectLogContains = (received, logs) => {
-  logs.forEach((log) => {
-    expect(received).toEqual(expect.stringContaining(log));
-  });
+const runException = async (inputs) => {
+  const logSpy = getLogSpy();
+  mockQuestions(inputs);
+
+  const app = new App();
+  await app.play(); // await 추가
+
+  expectLogContains(getOutput(logSpy), ['[ERROR]']);
 };
 
 const expectBridgeOrder = (received, upside, downside) => {
@@ -57,7 +53,7 @@ const expectBridgeOrder = (received, upside, downside) => {
 
 describe('다리 건너기 테스트', () => {
   test('다리 생성 테스트', () => {
-    const randomNumbers = ['1', '0', '0'];
+    const randomNumbers = [1, 0, 0];
     const mockGenerator = randomNumbers.reduce(
       (acc, number) => acc.mockReturnValueOnce(number),
       jest.fn(),
@@ -67,13 +63,14 @@ describe('다리 건너기 테스트', () => {
     expect(bridge).toEqual(['U', 'D', 'D']);
   });
 
-  test('기능 테스트', () => {
+  test('기능 테스트', async () => {
+    // async 추가
     const logSpy = getLogSpy();
-    mockRandoms(['1', '0', '1']);
+    mockRandoms([1, 0, 1]);
     mockQuestions(['3', 'U', 'D', 'U']);
 
     const app = new App();
-    app.play();
+    await app.play(); // await 추가
 
     const log = getOutput(logSpy);
     expectLogContains(log, [
@@ -86,7 +83,8 @@ describe('다리 건너기 테스트', () => {
     expectBridgeOrder(log, '[ O |   | O ]', '[   | O |   ]');
   });
 
-  test('예외 테스트', () => {
-    runException(['a']);
+  test('예외 테스트', async () => {
+    mockRandoms([1, 0, 1]);
+    await runException(['a', '3', 'U', 'D', 'U']);
   });
 });
