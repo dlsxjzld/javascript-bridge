@@ -53,3 +53,14 @@ const checkMove = (input) => {
 export const validateUserMove = (input) => {
   checkMove(input);
 };
+
+const checkRetry = (input) => {
+  toThrowNewError(
+    CONSTANT.USER_RETRY.includes(input) === false,
+    'R 혹은 Q만 가능합니다.',
+  );
+};
+
+export const validateRetry = (input) => {
+  checkRetry(input);
+};
