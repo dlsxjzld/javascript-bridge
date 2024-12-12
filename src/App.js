@@ -1,7 +1,10 @@
 import BridgeMaker from './BridgeMaker.js';
 import { InputView } from './view/InputView.js';
 import { OutputView } from './view/OutputView.js';
-import { validateBridgeSize } from './validation/validateFunctions.js';
+import {
+  validateBridgeSize,
+  validateUserMove,
+} from './validation/validateFunctions.js';
 
 import { MESSAGE } from './constants/message.js';
 import BridgeRandomNumberGenerator from './model/BridgeRandomNumberGenerator.js';
@@ -13,20 +16,38 @@ class App {
   async play() {
     OutputView.printGameInstruction();
     const bridgeSize = await this.getBridgeSize();
-
-    const totalBridge = Array.from({ length: 2 }, () =>
-      BridgeMaker.makeBridge(bridgeSize, BridgeRandomNumberGenerator.generate),
+    const answer = BridgeMaker.makeBridge(
+      bridgeSize,
+      BridgeRandomNumberGenerator.generate,
     );
-    // TODO: 게임 시작하고 브릿지 게임 실패하면 R 혹은 Q 입력
-    this.startBridgeGame(totalBridge);
+    const realBridge = this.makeRealBridge(answer, bridgeSize);
+    // console.log(
+    //   realBridge
+    //     .map((val) => val.join('|'))
+    //     .map((val) => `[${val}]`)
+    //     .join('\n'),
+    // );
+    this.startBridgeGame(realBridge, bridgeSize);
+  }
+  // TODO: 게임 시작하고 브릿지 게임 실패하면 R 혹은 Q 입력
+
+  getRow(answer) {
+    if (answer === 'U') {
+      return 0;
+    }
+    return 1;
   }
 
-  // console.log(
-  //   bridge
-  //     .map((val) => val.join('|'))
-  //     .map((val) => `[${val}]`)
-  //     .join('\n'),
-  // );
+  makeRealBridge(answers, bridgeSize) {
+    const realBridge = Array.from({ length: 2 }, () =>
+      Array.from({ length: bridgeSize }, () => false),
+    );
+    answers.forEach((answer, col) => {
+      realBridge[this.getRow(answer)][col] = true;
+    });
+    return realBridge;
+  }
+
   async getBridgeSize() {
     try {
       const input = await InputView.readBridgeSize();
@@ -38,21 +59,17 @@ class App {
     }
   }
 
-  async startBridgeGame(bridge) {
+  async startBridgeGame(bridge, bridgeSize) {
     this.gameCount += 1;
-    const bridgeGame = new BridgeGame(bridge);
+    const bridgeGame = new BridgeGame(bridge, bridgeSize);
+
     // TODO: 매 라운드가 성공했는지 실패했는지 반환 받고 이걸 토대로 startBridgeGame을 다시 할지 정함
-    // const roundResult = bridgeGame.retry();
-    // if (roundResult === false) {
-    //   // 실패면
-    //   await this.askUserTry(bridge);
-    // }
   }
 
-  askUserMove() {
+  async askUserMove() {
     try {
-      const move = InputView.readMoving();
-      validateBridgeSize(move);
+      const move = await InputView.readMoving();
+      validateUserMove(move);
       return move;
     } catch (error) {
       OutputView.printResult(error.message);
