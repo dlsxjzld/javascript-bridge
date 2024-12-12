@@ -11,9 +11,8 @@ class App {
     OutputView.printGameInstruction();
     const bridgeSize = await this.getBridgeSize();
 
-    const bridge = BridgeMaker.makeBridge(
-      bridgeSize,
-      BridgeRandomNumberGenerator.generate,
+    const totalBridge = Array.from({ length: 2 }, () =>
+      BridgeMaker.makeBridge(bridgeSize, BridgeRandomNumberGenerator.generate),
     );
   }
 
