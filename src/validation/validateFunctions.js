@@ -44,7 +44,10 @@ export const validateBridgeSize = (input) => {
 };
 
 const checkMove = (input) => {
-  toThrowNewError(input !== 'U' || input !== 'D', 'U 혹은 D만 가능합니다.');
+  toThrowNewError(
+    CONSTANT.USER_MOVE.includes(input) === false,
+    'U 혹은 D만 가능합니다.',
+  );
 };
 
 export const validateUserMove = (input) => {
