@@ -42,6 +42,20 @@ class App {
     this.gameCount += 1;
     const bridgeGame = new BridgeGame(bridge);
     // TODO: 매 라운드가 성공했는지 실패했는지 반환 받고 이걸 토대로 startBridgeGame을 다시 할지 정함
+    const roundResult = bridgeGame.getRoundResult();
+    if (roundResult === false) {
+      // 실패면
+      await this.askUserTry(bridge);
+    }
+  }
+
+  async askUserTry(bridge) {
+    const reTry = await InputView.readGameCommand();
+    if (reTry === 'Q') {
+      // 종료
+    } else {
+      this.startBridgeGame(bridge);
+    }
   }
 }
 
