@@ -3,4 +3,5 @@ export const CONSTANT = {
   BRIDGE_MAX: 20,
 
   USER_MOVE: ['U', 'D'],
+  USER_RETRY: ['R', 'Q'],
 };
