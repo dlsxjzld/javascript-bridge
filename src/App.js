@@ -12,7 +12,7 @@ import BridgeRandomNumberGenerator from './model/BridgeRandomNumberGenerator.js'
 import BridgeGame from './model/BridgeGame.js';
 
 class App {
-  gameCount = 0; // 총 시도 횟수
+  gameCount = 0;
 
   async play() {
     OutputView.printGameInstruction();
@@ -22,15 +22,8 @@ class App {
       BridgeRandomNumberGenerator.generate,
     );
     const realBridge = this.makeRealBridge(answer, bridgeSize);
-    console.log(
-      realBridge
-        .map((val) => val.join('|'))
-        .map((val) => `[${val}]`)
-        .join('\n'),
-    );
     this.startBridgeGame(realBridge, bridgeSize);
   }
-  // TODO: 게임 시작하고 브릿지 게임 실패하면 R 혹은 Q 입력
 
   getRow(answer) {
     if (answer === 'U') {
@@ -66,17 +59,18 @@ class App {
     for (let step = 0; step < bridgeSize; step += 1) {
       const userMove = await this.askUserMove();
       const roundResult = bridgeGame.move(userMove, step);
+      OutputView.printMap(bridgeGame.getCurrentBridgeMap(step));
       if (roundResult === false) {
         const re = await bridgeGame.retry(() => this.askUserTry());
         if (re) {
           this.startBridgeGame(bridge, bridgeSize);
           return;
         }
-        this.finishGame(bridge, '실패');
+        this.finishGame(bridgeGame, step, '실패');
         return;
       }
     }
-    this.finishGame(bridge, '성공');
+    this.finishGame(bridgeGame, bridgeSize, '성공');
   }
 
   async askUserMove() {
@@ -101,9 +95,9 @@ class App {
     }
   }
 
-  finishGame(bridge, result) {
+  finishGame(bridgeGame, step, result) {
     OutputView.printGameResultInstruction();
-    // bridge 출력
+    OutputView.printMap(bridgeGame.getCurrentBridgeMap(step));
     OutputView.printResult(MESSAGE.GAME_SUCCESS_RESULT(result));
     OutputView.printResult(MESSAGE.GAME_TRY_COUNT(this.gameCount));
   }
