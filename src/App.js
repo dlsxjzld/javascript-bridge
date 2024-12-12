@@ -4,13 +4,25 @@ import { OutputView } from './view/OutputView.js';
 import { validateBridgeSize } from './validation/validateFunctions.js';
 
 import { MESSAGE } from './constants/message.js';
+import BridgeRandomNumberGenerator from './model/BridgeRandomNumberGenerator.js';
 
 class App {
   async play() {
     OutputView.printGameInstruction();
-    const bridgeSize = this.getBridgeSize();
+    const bridgeSize = await this.getBridgeSize();
+
+    const bridge = BridgeMaker.makeBridge(
+      bridgeSize,
+      BridgeRandomNumberGenerator.generate,
+    );
   }
 
+  // console.log(
+  //   bridge
+  //     .map((val) => val.join('|'))
+  //     .map((val) => `[${val}]`)
+  //     .join('\n'),
+  // );
   async getBridgeSize() {
     try {
       const input = await InputView.readBridgeSize();
