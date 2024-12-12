@@ -12,8 +12,8 @@ export const OutputView = {
    */
   printMap(bridgeMap) {
     bridgeMap
-      .map((val) => val.join('|'))
-      .map((val) => `[${val}]`)
+      .map((val) => val.join(' | '))
+      .map((val) => `[ ${val} ]`)
       .forEach((oneBridge) => {
         Console.print(oneBridge);
       });
