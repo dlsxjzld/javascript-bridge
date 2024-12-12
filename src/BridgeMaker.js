@@ -1,5 +1,5 @@
 const getBridgeChar = (random) => {
-  if (random === 0) {
+  if (random === 0 || random === '0') {
     return 'D';
   }
   return 'U';
@@ -15,12 +15,11 @@ const BridgeMaker = {
    * @return {string[]} 입력받은 길이에 해당하는 다리 모양. 위 칸이면 U, 아래 칸이면 D로 표현해야 한다.
    */
   makeBridge(size, generateRandomNumber) {
-    const bridge = Array.from({ length: 2 }, () =>
-      Array.from({ length: size }, () => {
-        const random = generateRandomNumber();
-        return getBridgeChar(random);
-      }),
-    );
+    const bridge = Array.from({ length: size }, () => {
+      const random = generateRandomNumber();
+      return getBridgeChar(random);
+    });
+
     return bridge;
   },
 };
