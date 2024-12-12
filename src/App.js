@@ -62,7 +62,10 @@ class App {
   async startBridgeGame(bridge, bridgeSize) {
     this.gameCount += 1;
     const bridgeGame = new BridgeGame(bridge, bridgeSize);
-
+    for (let step = 0; step < bridgeSize; step += 1) {
+      const userMove = await this.askUserMove();
+      const roundResult = bridgeGame.move(userMove, step);
+    }
     // TODO: 매 라운드가 성공했는지 실패했는지 반환 받고 이걸 토대로 startBridgeGame을 다시 할지 정함
   }
 
