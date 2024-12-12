@@ -43,6 +43,10 @@ class BridgeGame {
     }
     return false;
   }
+
+  getCurrentBridgeMap(step) {
+    return this.myBridge.map((oneBridge) => oneBridge.slice(0, step + 1));
+  }
 }
 
 export default BridgeGame;
