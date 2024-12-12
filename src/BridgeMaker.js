@@ -10,4 +10,4 @@ const BridgeMaker = {
   makeBridge(size, generateRandomNumber) {},
 };
 
-module.exports = BridgeMaker;
+export default BridgeMaker;

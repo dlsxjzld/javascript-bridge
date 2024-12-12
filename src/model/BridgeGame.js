@@ -17,4 +17,4 @@ class BridgeGame {
   retry() {}
 }
 
-module.exports = BridgeGame;
+export default BridgeGame;

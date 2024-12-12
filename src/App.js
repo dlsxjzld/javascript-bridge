@@ -1,5 +1,9 @@
+import BridgeMaker from './BridgeMaker.js';
+
 class App {
-  play() {}
+  play() {
+    console.log(typeof BridgeMaker.makeBridge);
+  }
 }
 
-module.exports = App;
+export default App;
