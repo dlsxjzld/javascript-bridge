@@ -10,6 +10,7 @@ export const InputView = {
    */
   async readBridgeSize() {
     const input = await Console.readLineAsync(MESSAGE.ASK_BRIDGE_SIZE);
+    Console.print('');
     return input;
   },
 
