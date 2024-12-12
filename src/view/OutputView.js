@@ -17,6 +17,7 @@ export const OutputView = {
       .forEach((oneBridge) => {
         Console.print(oneBridge);
       });
+    Console.print('');
   },
 
   /**
