@@ -42,3 +42,11 @@ export const validateBridgeSize = (input) => {
   checkInteger(input);
   checkBridgeRange(input);
 };
+
+const checkMove = (input) => {
+  toThrowNewError(input !== 'U' || input !== 'D', 'U 혹은 D만 가능합니다.');
+};
+
+export const validateUserMove = (input) => {
+  checkMove(input);
+};
