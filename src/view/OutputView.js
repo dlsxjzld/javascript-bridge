@@ -24,4 +24,8 @@ export const OutputView = {
   printGameInstruction() {
     Console.print(MESSAGE.GAME_INSTRUCTION);
   },
+
+  printGameResultInstruction() {
+    Console.print(MESSAGE.GAME_RESULT_INSTRUCTION);
+  },
 };
