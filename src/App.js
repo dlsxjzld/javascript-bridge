@@ -22,7 +22,7 @@ class App {
       BridgeRandomNumberGenerator.generate,
     );
     const realBridge = this.makeRealBridge(answer, bridgeSize);
-    this.startBridgeGame(realBridge, bridgeSize);
+    await this.startBridgeGame(realBridge, bridgeSize);
   }
 
   getRow(answer) {
